@@ -6,6 +6,7 @@ import com.indigententerprises.services.objects.IObjectService;
 import com.indigententerprises.messagingartifacts.ClaimCheck;
 import com.indigententerprises.domain.objects.Handle;
 
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import software.amazon.awssdk.services.sqs.model.SqsException;
@@ -18,7 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -43,6 +44,7 @@ public class MessageSender implements com.indigententerprises.sqsclaimcheck.serv
         this.messageGroupId = messageGroupId;
     }
 
+    @Override
     public void sendMessage(final String message) throws MessageTransmissionException {
         try {
             final byte[] bytes = message.getBytes(StandardCharsets.UTF_8);
@@ -53,10 +55,9 @@ public class MessageSender implements com.indigententerprises.sqsclaimcheck.serv
                         objectService.storeObjectAndMetaData(
                                 inputStream,
                                 size,
-                                new HashMap<>()
+                                Collections.emptyMap()
                         );
                 // TODO: figure out how to retrieve the url which is to be added to the document.
-                // TODO: this is of the upmost importance.
 
                 final ClaimCheck claimCheck = new ClaimCheck();
                 claimCheck.setHandle(handle.identifier);
@@ -87,5 +88,10 @@ public class MessageSender implements com.indigententerprises.sqsclaimcheck.serv
         } catch (JAXBException e) {
             throw new MessageTransmissionException(e);
         }
+    }
+
+    @Override
+    public void close() throws SdkClientException {
+        sqsClient.close();
     }
 }

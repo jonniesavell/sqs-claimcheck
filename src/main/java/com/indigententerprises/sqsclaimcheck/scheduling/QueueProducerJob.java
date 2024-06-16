@@ -53,7 +53,16 @@ public class QueueProducerJob implements Job {
 
             final String document = writer.toString();
             final MessageSender messageSender = messageSenderFactory.newMessageSender(region, queueName);
-            messageSender.sendMessage(document);
+
+            try {
+                messageSender.sendMessage(document);
+            } finally {
+                try {
+                    messageSender.close();
+                } catch (Exception e) {
+                    // swallow
+                }
+            }
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }

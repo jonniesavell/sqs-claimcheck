@@ -31,7 +31,12 @@ public class SchedulingConfiguration {
 
     @Bean
     public String region() {
-        final String result = System.getenv("AWS_DEFAULT_REGION");
+        String result = System.getenv("AWS_REGION");
+
+        if (result == null) {
+            result = System.getenv("AWS_DEFAULT_REGION");
+        }
+
         return result;
     }
 
