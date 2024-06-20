@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 /**
- * https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/get-started.html
+ * @author jonniesavell
  */
 public class MessageSender implements com.indigententerprises.sqsclaimcheck.services.MessageSender {
 
