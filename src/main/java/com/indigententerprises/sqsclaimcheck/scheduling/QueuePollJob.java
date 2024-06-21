@@ -28,7 +28,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * @author jonniesavell
+ */
 @Service
 public class QueuePollJob implements Job {
 

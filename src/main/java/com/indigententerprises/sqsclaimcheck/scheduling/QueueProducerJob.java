@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.StringWriter;
 
+/**
+ * @author jonniesavell
+ */
 @Service
 public class QueueProducerJob implements Job {
 

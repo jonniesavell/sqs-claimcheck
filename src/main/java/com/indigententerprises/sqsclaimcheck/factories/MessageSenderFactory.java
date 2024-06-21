@@ -12,6 +12,9 @@ import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
 
 import java.util.UUID;
 
+/**
+ * @author jonnie savell
+ */
 public class MessageSenderFactory {
 
     private final String bucketName;
