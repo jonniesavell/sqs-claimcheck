@@ -71,6 +71,7 @@ public class QueuePollJob implements Job {
                     final StringReader reader = new StringReader(messageBody);
                     final ClaimCheck claimCheck = (ClaimCheck) unmarshaller.unmarshal(reader);
                     final Handle handle = new Handle(claimCheck.getHandle());
+                    final String arn = claimCheck.getUrl();
                     final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
                     try {

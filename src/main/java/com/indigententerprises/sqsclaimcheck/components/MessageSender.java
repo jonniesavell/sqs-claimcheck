@@ -5,6 +5,7 @@ import com.indigententerprises.services.common.SystemException;
 import com.indigententerprises.services.objects.IObjectService;
 import com.indigententerprises.messagingartifacts.ClaimCheck;
 import com.indigententerprises.domain.objects.Handle;
+import com.indigententerprises.domain.objects.HandleAndArnPair;
 
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.sqs.SqsClient;
@@ -51,17 +52,16 @@ public class MessageSender implements com.indigententerprises.sqsclaimcheck.serv
             final int size = bytes.length;
 
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes)) {
-                final Handle handle =
+                final HandleAndArnPair handleAndArnPair =
                         objectService.storeObjectAndMetaData(
                                 inputStream,
                                 size,
                                 Collections.emptyMap()
                         );
-                // TODO: figure out how to retrieve the url which is to be added to the document.
 
                 final ClaimCheck claimCheck = new ClaimCheck();
-                claimCheck.setHandle(handle.identifier);
-                claimCheck.setUrl("");
+                claimCheck.setHandle(handleAndArnPair.handle.identifier);
+                claimCheck.setUrl(handleAndArnPair.arn);
 
                 final JAXBContext context = JAXBContext.newInstance(ClaimCheck.class);
                 final StringWriter writer = new StringWriter();
