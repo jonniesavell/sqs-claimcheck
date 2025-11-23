@@ -52,6 +52,7 @@ public class MessageSender implements com.indigententerprises.sqsclaimcheck.serv
             final int size = bytes.length;
 
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes)) {
+                // store the original message in durable persistent store
                 final HandleAndArnPair handleAndArnPair =
                         objectService.storeObjectAndMetaData(
                                 inputStream,
@@ -59,16 +60,19 @@ public class MessageSender implements com.indigententerprises.sqsclaimcheck.serv
                                 Collections.emptyMap()
                         );
 
+                // create a claim check for the original message
                 final ClaimCheck claimCheck = new ClaimCheck();
                 claimCheck.setHandle(handleAndArnPair.handle.identifier);
                 claimCheck.setUrl(handleAndArnPair.arn);
 
+                // serialize the claim check into XML
                 final JAXBContext context = JAXBContext.newInstance(ClaimCheck.class);
                 final StringWriter writer = new StringWriter();
                 final Marshaller marshaller = context.createMarshaller();
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
                 marshaller.marshal(claimCheck, writer);
 
+                // send the claim check to SQS
                 final String xmlOutput = writer.toString();
                 final SendMessageRequest sendMsgRequest = SendMessageRequest.builder()
                         .queueUrl(queueUrl)
@@ -79,13 +83,7 @@ public class MessageSender implements com.indigententerprises.sqsclaimcheck.serv
                         .build();
                 sqsClient.sendMessage(sendMsgRequest);
             }
-        } catch (SqsException e) {
-            throw new MessageTransmissionException(e);
-        } catch (IOException e) {
-            throw new MessageTransmissionException(e);
-        } catch (SystemException e) {
-            throw new MessageTransmissionException(e);
-        } catch (JAXBException e) {
+        } catch (SqsException | IOException | SystemException | JAXBException e) {
             throw new MessageTransmissionException(e);
         }
     }
